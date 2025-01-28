@@ -1,0 +1,6 @@
+stim_on: 50
+stim_off: 74
+target_on: 75
+T: 200
+target_off: ${.T}
+seed: 1234

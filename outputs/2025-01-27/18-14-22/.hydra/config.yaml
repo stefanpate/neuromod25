@@ -1,0 +1,13 @@
+stim_on: 50
+stim_off: 74
+target_on: 75
+target_off: 199
+nm_scl: 2
+scl_percent: 100
+contexts:
+- stim: 1
+  nm: 0
+  target: 1
+- stim: 0
+  nm: 0
+  target: 0

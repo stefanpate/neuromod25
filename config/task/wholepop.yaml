@@ -1,0 +1,20 @@
+defaults:
+  - base
+
+nm_scl: 2
+scl_percent: 100
+dh: 200 # n hidden units. Override with train / test configs
+
+contexts:
+  - stim: 1
+    nm: 0
+    target: 1
+  - stim: 0
+    nm: 0
+    target: 0
+  - stim: 1
+    nm: 1
+    target: 0
+  - stim: 0
+    nm: 1
+    target: 1

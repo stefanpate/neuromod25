@@ -1,0 +1,4 @@
+defaults:
+  - task: wholepop
+  - model: base_rnn
+

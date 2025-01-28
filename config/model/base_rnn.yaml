@@ -1,0 +1,11 @@
+seed: 1234
+pinh: 0.2
+pcon: 0.8
+g: 1.5
+di: 1
+dh: 200
+do: 1
+dt: 1
+tau_range: (4, 20) 
+wout_scl: 100
+x_noise_scl: 10

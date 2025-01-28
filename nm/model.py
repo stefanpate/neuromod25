@@ -53,12 +53,12 @@ class RNN(nn.Module):
         )
 
 
-    def single_step(self, u: torch.Tensor, x: torch.Tensor):
+    def single_step(self, u: torch.Tensor, x: torch.Tensor, w: torch.Tensor):
         r = torch.sigmoid(x)
         decay_term = torch.multiply(1 - self.dt / self.taus, x)
         recurrent_term = torch.multiply(
             self.dt / self.taus,
-            torch.matmul(self.w, r)
+            torch.matmul(w, r)
         )
         input_term = torch.matmul(self.win, u)
         noise = torch.normal(mean=0, std=1, size=x.shape) / self.x_noise_scl
@@ -68,17 +68,22 @@ class RNN(nn.Module):
         return output, x
 
     # Call this rnn for now to work with fpf
-    def rnn(self, u: torch.Tensor, r0: torch.Tensor):
+    def forward(self, u: torch.Tensor, r0: torch.Tensor, nm_signal: torch.Tensor = 1):
         T = u.shape[0]
         outputs = []
         xs = []
+        
+        if isinstance(nm_signal, int):
+            nm_signal = torch.eye(self.dh)
+        
+        w = self.get_w(nm_signal)
         for t in range(T):
             if t == 0:
                 r = r0
             else:
                 r = torch.sigmoid(x)
             
-            output, x = self.single_step(u[t], r0)
+            output, x = self.single_step(u[t], r, w)
             outputs.append(output)
             xs.append(x)
 
@@ -88,9 +93,9 @@ class RNN(nn.Module):
         return self.rnn(u, r0)
     
 
-    @property
-    def w(self):
-        return torch.abs(torch.matmul(self._w, self.m))
+    def get_w(self, nm_signal: torch.Tensor):
+        w_unscl = torch.abs(torch.matmul(self._w, self.m))
+        return torch.matmul(w_unscl, nm_signal)
 
 if __name__ == '__main__':
     model = RNN()
