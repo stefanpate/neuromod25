@@ -1,5 +1,6 @@
 defaults:
   - base
+  - _self_
 
 nm_scl: 2
 scl_percent: 100

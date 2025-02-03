@@ -9,3 +9,4 @@ dt: 1
 tau_range: (4, 20) 
 wout_scl: 100
 x_noise_scl: 10
+x0_scl: 100

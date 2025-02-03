@@ -21,6 +21,7 @@ class RNN(nn.Module):
         self.rng = np.random.default_rng(seed)
         self.dt = dt
         self.x_noise_scl = x_noise_scl
+        self.dh = dh
         
         # Non-trainable parameters
         self.win = torch.nn.Parameter(
@@ -52,6 +53,11 @@ class RNN(nn.Module):
             ) * (tau_range[1] - tau_range[0]) + tau_range[0]
         )
 
+        self.bias = torch.nn.Parameter(
+            torch.zeros(size=(do, do)),
+            requires_grad=True
+        )
+
 
     def single_step(self, u: torch.Tensor, x: torch.Tensor, w: torch.Tensor):
         r = torch.sigmoid(x)
@@ -64,17 +70,17 @@ class RNN(nn.Module):
         noise = torch.normal(mean=0, std=1, size=x.shape) / self.x_noise_scl
         x = decay_term + recurrent_term + input_term + noise
         output = torch.matmul(self.wout, torch.sigmoid(x)) + self.bias
+        output = torch.transpose(output, dim0=1, dim1=2) # (batch x time x do)
 
         return output, x
 
-    # Call this rnn for now to work with fpf
     def forward(self, u: torch.Tensor, r0: torch.Tensor, nm_signal: torch.Tensor = 1):
-        T = u.shape[0]
+        T = u.shape[1]
         outputs = []
         xs = []
         
         if isinstance(nm_signal, int):
-            nm_signal = torch.eye(self.dh)
+            nm_signal = torch.eye(self.dh).unsqueeze(0)
         
         w = self.get_w(nm_signal)
         for t in range(T):
@@ -83,15 +89,12 @@ class RNN(nn.Module):
             else:
                 r = torch.sigmoid(x)
             
-            output, x = self.single_step(u[t], r, w)
+            u_t = u[:, t, :].unsqueeze(1)
+            output, x = self.single_step(u_t, r, w)
             outputs.append(output)
             xs.append(x)
 
-        return torch.stack(outputs), torch.stack(xs)
-
-    def forward(self, u: torch.Tensor, r0: torch.Tensor):
-        return self.rnn(u, r0)
-    
+        return torch.cat(outputs, dim=1), torch.cat(xs, dim=-1)    
 
     def get_w(self, nm_signal: torch.Tensor):
         w_unscl = torch.abs(torch.matmul(self._w, self.m))
