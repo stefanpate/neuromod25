@@ -22,6 +22,7 @@ class RNN(nn.Module):
         self.dt = dt
         self.x_noise_scl = x_noise_scl
         self.dh = dh
+        self.tau_range = tau_range
         
         # Non-trainable parameters
         self.win = torch.nn.Parameter(
@@ -43,14 +44,16 @@ class RNN(nn.Module):
         )
 
         self._w = torch.nn.Parameter(
-            torch.normal(mean=0, std= g / np.sqrt(dh * pcon), size=(dh, dh)),
+            torch.multiply(
+                torch.rand(dh, dh) < pcon,
+                torch.normal(mean=0, std=1, size=(dh, dh)) * (g / np.sqrt(dh * pcon)),
+            ),
             requires_grad=True
         )
         
-        self.taus = torch.nn.Parameter(
-            torch.sigmoid(
-                torch.normal(mean=0, std=1, size=(dh, 1)),
-            ) * (tau_range[1] - tau_range[0]) + tau_range[0]
+        self._taus = torch.nn.Parameter(
+            torch.normal(mean=0, std=1, size=(dh, 1)),
+            requires_grad=True
         )
 
         self.bias = torch.nn.Parameter(
@@ -97,8 +100,15 @@ class RNN(nn.Module):
         return torch.cat(outputs, dim=1), torch.cat(xs, dim=-1)    
 
     def get_w(self, nm_signal: torch.Tensor):
-        w_unscl = torch.abs(torch.matmul(self._w, self.m))
+        w_unscl = torch.matmul(torch.abs(self._w), self.m)
         return torch.matmul(w_unscl, nm_signal)
+    
+    @property
+    def taus(self):
+        taus = torch.sigmoid(
+            self._taus
+        ) * (self.tau_range[1] - self.tau_range[0]) + self.tau_range[0]
+        return taus
 
 if __name__ == '__main__':
     model = RNN()

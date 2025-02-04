@@ -1,8 +1,17 @@
 defaults:
   - task: wholepop
   - model: base_rnn
+  - filepaths: filepaths
 
 learning_rate: 1e-3
-epochs: 100
+epochs: 250
 seed: 1234
 batch_size: 1
+last_x_scl: 25
+perf_threshold: 1
+
+hydra:
+  job:
+    chdir: True
+  run:
+    dir: ${filepaths.models}/${now:%Y-%m-%d}/${now:%H-%M-%S}

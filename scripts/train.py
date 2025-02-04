@@ -4,9 +4,12 @@ from nm.model import RNN
 from nm.tasks import BehavioralTasks
 import hydra
 from omegaconf import DictConfig
+from collections import deque
+import numpy as np
 
 def train_loop(dataloader, model, loss_fn, optimizer, x0_scl, batch_size):
     model.train()
+    losses = []
     for u, nm_signal, target in dataloader:
         # Init states
         x0 = torch.normal(mean=0, std=1, size=(batch_size, model.dh, 1)) / x0_scl
@@ -21,7 +24,10 @@ def train_loop(dataloader, model, loss_fn, optimizer, x0_scl, batch_size):
         optimizer.step()
         optimizer.zero_grad()
 
-        print(f"Loss={loss}")
+        print(f"Loss={loss / batch_size}")
+        losses.append(loss)
+
+    return losses
 
 @hydra.main(version_base=None, config_path='../config', config_name='train')
 def main(cfg: DictConfig):
@@ -35,14 +41,16 @@ def main(cfg: DictConfig):
     model = RNN()
 
     # Training
-    mse = nn.MSELoss()
+    mse = nn.MSELoss(reduction='sum')
     loss_fn = lambda pred, target : torch.sqrt(mse(pred, target))
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
 
     # Train
+    last_x_loss = deque(maxlen=int((cfg.last_x_scl * cfg.task.n_bctx) / cfg.batch_size))
+    epoch_losses = []
     for t in range(cfg.epochs):
         print(f"Epoch {t+1}\n-------------------------------")
-        train_loop(
+        losses = train_loop(
             dataloader=dataloader,
             model=model,
             loss_fn=loss_fn,
@@ -50,8 +58,18 @@ def main(cfg: DictConfig):
             x0_scl=cfg.model.x0_scl,
             batch_size=cfg.batch_size,
         )
+
+        epoch_losses.append(sum(losses) / (len(losses) * cfg.batch_size))
+        last_x_loss.extend(losses)
+
+        if sum(last_x_loss) / (len(last_x_loss) * cfg.batch_size) < cfg.perf_threshold:
+            print("Met performance criteria")
+            break
     
-    print("Done!")
+    print("Saving")
+    epoch_losses = torch.stack(epoch_losses).detach().numpy()
+    np.save("epoch_losses", epoch_losses)
+    torch.save(model.state_dict(), 'model_weights.pth')
     
 
 if __name__ == "__main__":
