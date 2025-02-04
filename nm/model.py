@@ -61,7 +61,6 @@ class RNN(nn.Module):
             requires_grad=True
         )
 
-
     def single_step(self, u: torch.Tensor, x: torch.Tensor, w: torch.Tensor):
         r = torch.sigmoid(x)
         decay_term = torch.multiply(1 - self.dt / self.taus, x)
@@ -77,7 +76,7 @@ class RNN(nn.Module):
 
         return output, x
 
-    def forward(self, u: torch.Tensor, r0: torch.Tensor, nm_signal: torch.Tensor = 1):
+    def forward(self, u: torch.Tensor, x0: torch.Tensor, nm_signal: torch.Tensor = 1):
         T = u.shape[1]
         outputs = []
         xs = []
@@ -85,15 +84,11 @@ class RNN(nn.Module):
         if isinstance(nm_signal, int):
             nm_signal = torch.eye(self.dh).unsqueeze(0)
         
+        x = x0
         w = self.get_w(nm_signal)
         for t in range(T):
-            if t == 0:
-                r = r0
-            else:
-                r = torch.sigmoid(x)
-            
             u_t = u[:, t, :].unsqueeze(1)
-            output, x = self.single_step(u_t, r, w)
+            output, x = self.single_step(u_t, x, w)
             outputs.append(output)
             xs.append(x)
 

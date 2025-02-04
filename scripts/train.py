@@ -11,12 +11,11 @@ def train_loop(dataloader, model, loss_fn, optimizer, x0_scl, batch_size):
     model.train()
     losses = []
     for u, nm_signal, target in dataloader:
-        # Init states
+        # Init state
         x0 = torch.normal(mean=0, std=1, size=(batch_size, model.dh, 1)) / x0_scl
-        r0 = torch.sigmoid(x0)
 
         # Compute prediction and loss
-        output, x = model(u, r0, nm_signal)
+        output, x = model(u, x0, nm_signal)
         loss = loss_fn(output, target)
 
         # Backpropagation
@@ -25,7 +24,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, x0_scl, batch_size):
         optimizer.zero_grad()
 
         print(f"Loss={loss / batch_size}")
-        losses.append(loss)
+        losses.append(float(loss.detach().numpy()))
 
     return losses
 
@@ -45,9 +44,11 @@ def main(cfg: DictConfig):
     loss_fn = lambda pred, target : torch.sqrt(mse(pred, target))
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
 
+    
     # Train
     last_x_loss = deque(maxlen=int((cfg.last_x_scl * cfg.task.n_bctx) / cfg.batch_size))
-    epoch_losses = []
+    epoch_losses = []    
+    
     for t in range(cfg.epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         losses = train_loop(
@@ -67,7 +68,7 @@ def main(cfg: DictConfig):
             break
     
     print("Saving")
-    epoch_losses = torch.stack(epoch_losses).detach().numpy()
+    epoch_losses = np.array(epoch_losses)
     np.save("epoch_losses", epoch_losses)
     torch.save(model.state_dict(), 'model_weights.pth')
     
