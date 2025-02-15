@@ -1,0 +1,23 @@
+defaults:
+  - task: wholepop
+  - model: base_rnn
+  - filepaths: filepaths
+  - _self_
+
+day: 2025-02-04
+time: 00-48-14
+noise_scale: 0.5
+n_inits: 1000
+
+fpf_hps:
+  max_iters: 5000
+  verbose: True
+  super_verbose: True
+  do_compute_jacobians: False
+  do_decompose_jacobians: False
+
+hydra:
+  job:
+    chdir: True
+  run:
+    dir: ${filepaths.models}/${...day}/${...time}

@@ -9,6 +9,7 @@ task:
   scl_percent: 100
   dh: 200
   n_bctx: 2
+  name: wholepop
   contexts:
   - stim: 1
     nm: 0
@@ -40,3 +41,11 @@ filepaths:
   models: ${.results}/models
 day: '2025-02-04'
 time: 00-48-14
+noise_scale: 0.5
+n_inits: 1000
+fpf_hps:
+  max_iters: 5000
+  verbose: true
+  super_verbose: true
+  do_compute_jacobians: false
+  do_decompose_jacobians: false

@@ -77,6 +77,23 @@ class RNN(nn.Module):
         return output, x
 
     def forward(self, u: torch.Tensor, x0: torch.Tensor, nm_signal: torch.Tensor = 1):
+        '''
+        Args
+        ----
+        u:Tensor
+            (batch_size x T x din)
+        x0:Tensor
+            (batch_size x dh x 1)
+        nm_sig:Tensor
+            (batch_size x dh x dh)
+
+        Returns
+        -------
+        outputs
+            (batch_size x T x do)
+        xs
+            (batch_size x dh x T)
+        '''
         T = u.shape[1]
         outputs = []
         xs = []
@@ -92,7 +109,8 @@ class RNN(nn.Module):
             outputs.append(output)
             xs.append(x)
 
-        return torch.cat(outputs, dim=1), torch.cat(xs, dim=-1)    
+        return torch.cat(outputs, dim=1), torch.cat(xs, dim=-1)
+    
 
     def get_w(self, nm_signal: torch.Tensor):
         w_unscl = torch.matmul(torch.abs(self._w), self.m)
@@ -104,6 +122,33 @@ class RNN(nn.Module):
             self._taus
         ) * (self.tau_range[1] - self.tau_range[0]) + self.tau_range[0]
         return taus
+    
+def fpf_rnn(u: torch.Tensor, x0: torch.Tensor, model: RNN, nm_signal: torch.Tensor):
+    '''
+    Wrapper function to map FPF arguments to ours
+
+    Args
+    ----
+    u:Tensor
+        (batch_size x T x din)
+    x0:Tensor
+        (1 x batch_size x dh)
+
+    Returns
+    --------
+    xs:Tensor
+        (batch_size x t x dh) hidden states over time
+    xT:
+        (1 x batch_size x dh) final hidden state
+    '''
+    x0 = torch.permute(x0, (1, 2, 0))
+    _, xs = model(u, x0, nm_signal)
+
+    xs = torch.permute(xs, (0, 2, 1))
+    xT = xs[:, -1, :].unsqueeze(0)
+
+    return xs, xT
+
 
 if __name__ == '__main__':
     model = RNN()

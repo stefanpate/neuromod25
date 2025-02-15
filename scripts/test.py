@@ -23,8 +23,7 @@ def main(cfg: DictConfig):
     for i, batch in enumerate(dataloader):
         u, nm_signal, target = batch
         x0 = torch.normal(mean=0, std=1, size=(1, model.dh, 1)) / cfg.model.x0_scl
-        r0 = torch.sigmoid(x0)
-        output, x = model(u, r0, nm_signal)
+        output, x = model(u, x0, nm_signal)
 
         target = target.squeeze().detach().numpy()
         output = output.squeeze().detach().numpy()

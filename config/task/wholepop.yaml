@@ -6,6 +6,7 @@ nm_scl: 2
 scl_percent: 100
 dh: 200 # n hidden units. Override with train / test configs
 n_bctx: 2
+name: wholepop
 
 contexts:
   - stim: 1

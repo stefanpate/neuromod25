@@ -113,12 +113,12 @@ hydra:
     - hydra.mode=RUN
     task: []
   job:
-    name: test
+    name: find_fixed_points
     chdir: true
     override_dirname: ''
     id: ???
     num: ???
-    config_name: test
+    config_name: fpf
     env_set: {}
     env_copy: []
     config:
@@ -129,7 +129,7 @@ hydra:
   runtime:
     version: 1.3.2
     version_base: '1.3'
-    cwd: /home/stef/neuromod25
+    cwd: /home/stef/neuromod25/scripts
     config_sources:
     - path: hydra.conf
       schema: pkg
