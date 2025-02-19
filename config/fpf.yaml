@@ -4,8 +4,9 @@ defaults:
   - filepaths: filepaths
   - _self_
 
-day: 2025-02-04
-time: 00-48-14
+day: 2025-02-17
+time: 16-19-12
+job_num: 0
 noise_scale: 0.5
 n_inits: 1000
 
@@ -21,3 +22,6 @@ hydra:
     chdir: True
   run:
     dir: ${filepaths.models}/${...day}/${...time}
+  sweep:
+    dir: ${filepaths.models}/${...day}/${...time}
+    subdir: ${...job_num}

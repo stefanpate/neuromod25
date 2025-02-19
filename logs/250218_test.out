@@ -1,0 +1,10 @@
+/home/stef/neuromod25/.venv/lib/python3.8/site-packages/hydra/_internal/defaults_list.py:251: UserWarning: In 'test': Defaults list is missing `_self_`. See https://hydra.cc/docs/1.2/upgrades/1.0_to_1.1/default_composition_order for more information
+  warnings.warn(msg, UserWarning)
+[2025-02-18 19:19:51,587][HYDRA] Launching 5 jobs locally
+[2025-02-18 19:19:51,587][HYDRA] 	#0 : job_num=0
+[2025-02-18 19:19:52,730][HYDRA] 	#1 : job_num=1
+[2025-02-18 19:19:53,411][HYDRA] 	#2 : job_num=2
+[2025-02-18 19:19:54,075][HYDRA] 	#3 : job_num=3
+[2025-02-18 19:19:54,839][HYDRA] 	#4 : job_num=4
+/home/stef/neuromod25/.venv/lib/python3.8/site-packages/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()

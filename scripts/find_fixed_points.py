@@ -19,11 +19,14 @@ def main(cfg: DictConfig):
 
     # Load model
     model = RNN()
-    save_path = Path(cfg.filepaths.models) / cfg.day / cfg.time / 'model_weights.pth'
+    save_path = Path(cfg.filepaths.models) / cfg.day / cfg.time / str(cfg.job_num) / 'model_weights.pth'
     model.load_state_dict(torch.load(save_path, weights_only=True))
     model.eval()
 
     for i, batch in enumerate(dataloader):
+        if i % 2 == 0:
+            continue
+        
         u, nm_signal, _ = batch
         rnn_wrapper = partial(fpf_rnn, model=model, nm_signal=nm_signal)
         x0 = torch.normal(mean=0, std=1, size=(1, model.dh, 1)) / cfg.model.x0_scl

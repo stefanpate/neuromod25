@@ -14,7 +14,7 @@ def main(cfg: DictConfig):
     dataloader = torch.utils.data.DataLoader(wholepop_dataset, batch_size=1, shuffle=False)
 
     model = RNN()
-    save_path = Path(cfg.filepaths.models) / cfg.day / cfg.time / 'model_weights.pth'
+    save_path = Path(cfg.filepaths.models) / cfg.day / cfg.time / str(cfg.job_num) / 'model_weights.pth'
 
     model.load_state_dict(torch.load(save_path, weights_only=True))
     model.eval()

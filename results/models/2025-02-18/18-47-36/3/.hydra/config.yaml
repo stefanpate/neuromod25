@@ -1,0 +1,44 @@
+task:
+  stim_on: 50
+  stim_off: 74
+  target_on: 75
+  T: 200
+  target_off: ${.T}
+  seed: 1234
+  nm_scl: 2
+  scl_percent: 100
+  dh: 200
+  n_bctx: 2
+  name: wholepop
+  contexts:
+  - stim: 1
+    nm: 0
+    target: 1
+  - stim: 0
+    nm: 0
+    target: 0
+  - stim: 1
+    nm: 1
+    target: 0
+  - stim: 0
+    nm: 1
+    target: -1
+model:
+  seed: 1234
+  pinh: 0.2
+  pcon: 0.8
+  g: 1.5
+  di: 1
+  dh: 200
+  do: 1
+  dt: 1
+  tau_range: (4, 20)
+  wout_scl: 100
+  x_noise_scl: 10
+  x0_scl: 100
+filepaths:
+  results: /home/stef/neuromod25/results
+  models: ${.results}/models
+day: '2025-02-18'
+time: 18-47-36
+job_num: 3

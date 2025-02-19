@@ -3,11 +3,15 @@ defaults:
   - model: base_rnn
   - filepaths: filepaths
 
-day: 2025-02-04
-time: 00-48-14
+day: 2025-02-18
+time: 18-47-36
+job_num: 0
 
 hydra:
   job:
     chdir: True
   run:
+    dir: ${filepaths.models}/${...day}/${...time}/${...job_num}
+  sweep:
     dir: ${filepaths.models}/${...day}/${...time}
+    subdir: ${...job_num}
