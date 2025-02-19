@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: ${filepaths.models}/${...day}/${...time}/${...job_num}
+    dir: ${filepaths.models}/${...day}/${...time}
   sweep:
     dir: ${filepaths.models}/${...day}/${...time}
     subdir: ${...job_num}
@@ -114,12 +114,12 @@ hydra:
     task:
     - job_num=1
   job:
-    name: test
+    name: find_fixed_points
     chdir: true
     override_dirname: job_num=1
-    id: '1'
-    num: 1
-    config_name: test
+    id: '0'
+    num: 0
+    config_name: fpf
     env_set: {}
     env_copy: []
     config:

@@ -42,3 +42,11 @@ filepaths:
 day: '2025-02-18'
 time: 18-47-36
 job_num: 3
+noise_scale: 0.5
+n_inits: 1000
+fpf_hps:
+  max_iters: 5000
+  verbose: true
+  super_verbose: true
+  do_compute_jacobians: false
+  do_decompose_jacobians: false

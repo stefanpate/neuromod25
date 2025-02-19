@@ -4,8 +4,8 @@ defaults:
   - filepaths: filepaths
   - _self_
 
-day: 2025-02-17
-time: 16-19-12
+day: 2025-02-18
+time: 18-47-36
 job_num: 0
 noise_scale: 0.5
 n_inits: 1000
